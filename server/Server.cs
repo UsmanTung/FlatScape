@@ -12,7 +12,7 @@ class Server
 {
     static void Main()
     {
-        ConcurrentDictionary<TcpClient, Player> players = new ConcurrentDictionary<TcpClient, Player>();
+        ConcurrentDictionary<TcpClient, Player> players = new ConcurrentDictionary<TcpClient, Player>(); 
         IPAddress ip = IPAddress.Parse("127.0.0.1");
         TcpListener server = new TcpListener(ip, 8080);
 
@@ -34,47 +34,58 @@ class Server
     static void HandleClient(TcpClient client, ConcurrentDictionary<TcpClient, Player> players)
     {
         Console.WriteLine("Connected to client " + ((IPEndPoint)client.Client.RemoteEndPoint).ToString());
-        players.TryAdd(client, new Player()
-        {
-            Id = "1",
-            Name = "JOHNDOE",
-            X = 0,
-            Y = 0
-        });
+        Player john = new Player() {Id="1", Name="JOHNDOE", X=0, Y=0, Hp =100};
+        players.TryAdd(client, john);
         Console.WriteLine(PrettyPrint(players));
         NetworkStream stream = client.GetStream();
-        while (true)
-        {
-            try
-            {
-                byte[] buffer = new byte[1024];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
 
-                string data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                Console.WriteLine("Received message: " + data);
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = stream.Read(buffer, 0, buffer.Length))>1){
+          string data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+          ParseData(john, data);
+          Console.WriteLine(PrettyPrint(players));
+      }
 
-                string response = "Server response: " + data;
-                byte[] responseBuffer = Encoding.ASCII.GetBytes(response);
-
-                stream.Write(responseBuffer, 0, responseBuffer.Length);
-                Console.WriteLine("Response sent.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-                stream.Close();
-                client.Close();
-            }
-
-        }
-
+      stream.Close();
+      client.Close();
+        
     }
 
-    public static string PrettyPrint(Object o)
-    {
-        var jsonString = JsonConvert.SerializeObject(
-             o, Formatting.Indented,
-             new JsonConverter[] { new StringEnumConverter() });
-        return jsonString;
+    // data received with as 4 letter action and then 2 digits for values
+    // DAMG 20 = damage 20 -> -20 health
+    // HEAL 20 = heal 20 -> +20 health
+    public static void ParseData(Player player, string data){
+      int counter=0;
+      bool first = true;
+      while(counter < data.Length-1){
+        string action = data.Substring(counter, 4).ToLower();
+        string value = data.Substring(counter+4, 2).ToLower();
+        if (action == "damg"){
+          player.Hp-=Int32.Parse(value);
+        }else if (action == "heal"){
+          player.Hp+=Int32.Parse(value);
+        }else if (action == "movx"){
+          player.X+=Int32.Parse(value);
+        }else{
+          player.Y+=Int32.Parse(value);
+        }
+
+        //Console.WriteLine(counter + ":"  + data[counter]);
+        counter+=6;
+
+      //string response = "Server response: " + data;
+      //byte[] responseBuffer = Encoding.ASCII.GetBytes(response);
+      
+      //stream.Write(responseBuffer, 0, responseBuffer.Length);
+      //Console.WriteLine("Response sent.");
+      }
+    }
+
+    public static string PrettyPrint(Object o) {
+      var jsonString = JsonConvert.SerializeObject(
+           o, Formatting.Indented,
+           new JsonConverter[] {new StringEnumConverter()});
+      return jsonString;
     }
 }
