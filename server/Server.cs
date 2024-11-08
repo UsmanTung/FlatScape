@@ -44,7 +44,7 @@ class Server
     while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 1)
     {
       string data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-      ParseData(john, data);
+      Actions.ParseData(john, data);
       Console.WriteLine(PrettyPrint(players));
     }
 
@@ -52,46 +52,7 @@ class Server
     client.Close();
 
   }
-
-  // data received with as 4 letter action and then 2 digits for values
-  // DAMG 20 = damage 20 -> -20 health
-  // HEAL 20 = heal 20 -> +20 health
-  public static void ParseData(Player player, string data)
-  {
-    int counter = 0;
-    bool first = true;
-    while (counter < data.Length - 1)
-    {
-      string action = data.Substring(counter, 4).ToLower();
-      string value = data.Substring(counter + 4, 2).ToLower();
-      if (action == "damg")
-      {
-        player.Hp -= Int32.Parse(value);
-      }
-      else if (action == "heal")
-      {
-        player.Hp += Int32.Parse(value);
-      }
-      else if (action == "movx")
-      {
-        player.X += Int32.Parse(value);
-      }
-      else
-      {
-        player.Y += Int32.Parse(value);
-      }
-
-      //Console.WriteLine(counter + ":"  + data[counter]);
-      counter += 6;
-
-      //string response = "Server response: " + data;
-      //byte[] responseBuffer = Encoding.ASCII.GetBytes(response);
-
-      //stream.Write(responseBuffer, 0, responseBuffer.Length);
-      //Console.WriteLine("Response sent.");
-    }
-  }
-
+  
   public static string PrettyPrint(Object o)
   {
     var jsonString = JsonConvert.SerializeObject(
