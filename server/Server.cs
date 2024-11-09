@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using Microsoft.VisualBasic;
 
 class Server
 {
@@ -41,11 +44,13 @@ class Server
 
     byte[] buffer = new byte[1024];
     int bytesRead;
+
     while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 1)
     {
       string data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
       Actions.ParseData(john, data);
       Console.WriteLine(PrettyPrint(players));
+      Thread.Sleep(500);
     }
 
     stream.Close();
