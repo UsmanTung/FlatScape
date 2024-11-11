@@ -1,11 +1,14 @@
-using System;
 using System.Diagnostics;
-using System.Threading;
 
 class GameServer
 {
-    private const int TickRate = 600; // tick rate in milliseconds;
+    private const int TickRate = 5000; // tick rate in milliseconds;
     private bool isRunning = false;
+    private GameState gameState;
+
+    public GameServer(GameState gameState){
+        this.gameState=gameState;
+    }
 
 
     public void Start()
@@ -47,5 +50,8 @@ class GameServer
     private void ProcessGameTick()
     {
         // TODO: update the game state here
+        // update gamestate based on queue of client actions
+        gameState.UpdateState();
+        
     }
 }
