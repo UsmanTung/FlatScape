@@ -8,9 +8,13 @@ class Server
 {
   static void Main()
   {
+    int port = 8080;
+    string localIp = "127.0.0.1";
+
     ConcurrentDictionary<TcpClient, Player> players = new ConcurrentDictionary<TcpClient, Player>();
-    IPAddress ip = IPAddress.Parse("127.0.0.1");
-    TcpListener server = new TcpListener(ip, 8080);
+    IPAddress ip = IPAddress.Parse(localIp);
+    TcpListener server = new TcpListener(ip, port);
+
 
     server.Start();
     Console.WriteLine("Server started on " + server.LocalEndpoint);
@@ -21,7 +25,7 @@ class Server
 
     while (true)
     {
-      Console.WriteLine("Waiting for a connection...");
+      Console.WriteLine($"Waiting for a connection on port: {port}");
       TcpClient client = server.AcceptTcpClient();
 
       Task.Run(() => HandleClient(client, players, gameState));
