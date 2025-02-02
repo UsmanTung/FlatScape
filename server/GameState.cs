@@ -1,14 +1,16 @@
 // The Game State will hold all the data for the lay of the world including:
 // The tiles, NPCs, players, etc
-
+using System.Collections;
 
 class GameState
 {
     const int gameWidth = 100;
     const int gameHeight = 100;
+    public ArrayList gameObjects;
     Tile[,] tiles;
 
-    public GameState(GameObject[] allObjects){
+    public GameState(ArrayList allObjects){
+        this.gameObjects = allObjects;
         this.tiles = new Tile[gameWidth, gameHeight];
         for (int col = 0; col<gameWidth; col++){
             for(int row=0; row<gameHeight;  row++){
@@ -16,12 +18,13 @@ class GameState
             }
         }
         foreach (GameObject obj in allObjects){
-            tiles[obj.intendedY,obj.intendedX].addGameObject(obj);
+            tiles[obj.currentY,obj.currentX].addGameObject(obj);
         }
     }
 
     public void AddGameObject(GameObject obj){
-        tiles[obj.intendedY,obj.intendedX].addGameObject(obj);
+        tiles[obj.currentY,obj.currentX].addGameObject(obj);
+        this.gameObjects.Add(obj);
     }
 
     public void UpdateState(){
@@ -54,6 +57,9 @@ class GameState
                         tiles[row+Ymove, col+Xmove].addGameObject(obj);
                     }
                     obj.touched = true;
+                    obj.currentX = obj.currentX+Xmove;
+                    obj.currentY = obj.currentY+Ymove;
+
                 }
             }
         }

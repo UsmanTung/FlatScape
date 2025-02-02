@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Collections.Concurrent;
+using System.Collections;
 
 
 class Server
@@ -18,7 +19,7 @@ class Server
 
     server.Start();
     Console.WriteLine("Server started on " + server.LocalEndpoint);
-    GameObject[] gameObjects = [];
+    ArrayList gameObjects = new ArrayList();
     GameState gameState = new GameState(gameObjects);
     GameServer gameServer = new GameServer(gameState);
     gameServer.Start();
@@ -38,7 +39,7 @@ class Server
   static void HandleClient(TcpClient client, ConcurrentDictionary<TcpClient, Player> players, GameState gameState)
   {
     Console.WriteLine("Connected to client " + ((IPEndPoint)client.Client.RemoteEndPoint).ToString());
-    Player john = new Player() { uuid = "1", Name = "JOHNDOE", intendedX = 0, intendedY = 0, Hp = 100 };
+    Player john = new Player() { uuid = "1", Name = "JOHNDOE", intendedX = 0, intendedY = 0,currentX = 0, currentY=0, Hp = 100 };
     //players.TryAdd(client, john);
     gameState.AddGameObject(john);
     Console.WriteLine(Utils.PrettyPrint(players));

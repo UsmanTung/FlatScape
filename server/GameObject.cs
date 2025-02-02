@@ -5,5 +5,7 @@ class GameObject
 
     public int intendedX {get; set; }
     public int intendedY {get; set; }
+    public int currentX  {get; set; }
+    public int currentY {get; set; }
     public bool touched {get; set; }
 }

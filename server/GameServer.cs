@@ -52,6 +52,6 @@ class GameServer
         // TODO: update the game state here
         // update gamestate based on queue of client actions
         gameState.UpdateState();
-        
+        Console.WriteLine(Utils.PrettyPrint(gameState.gameObjects));
     }
 }
